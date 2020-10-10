@@ -46,6 +46,10 @@ metric = tf.keras.metrics.BinaryAccuracy()
 
 epochs = 100
 batch_size = 8
+# This weight is actually the bias of the first neuron of the hidden layer
+# with 15 neurons. I used the bias because it's gradient is approximated by
+# the error, and thus making this gradient 0 controls gradients of the whole
+# neuron.
 weight_controlled = (1,0)
 target_controlled = 0
 
