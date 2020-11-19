@@ -20,6 +20,9 @@ class gradientHacker:
                target_neuron, \
                target_error):
 
+    self.nb_hidden_layers = nb_hidden_layers
+    self.nb_hidden_per_layer = nb_hidden_per_layer
+    self.activation_fn = activation_fn
     hidden_layers = \
       [keras.layers.Dense(nb_hidden_per_layer,activation=activation_fn)] * nb_hidden_layers
     self.model = keras.Sequential([keras.Input(shape=(3,))] \
@@ -39,7 +42,7 @@ class gradientHacker:
     # Create the right Tensorboard variables
     run_name = "Regularization" + str(self.regularization_factor) \
                + "Neuron" + str(self.target_neuron[0]) + ',' + str(self.target_neuron[1]) \
-               + "Target" + str(target_error) + '-'
+               + "Target" + str(self.target_error) + '-'
     logdir = "logs/scalars/" + run_name + datetime.now().strftime("%Y%m%d-%H%M%S")
     file_writer = tf.summary.create_file_writer(logdir + "/metrics")
     file_writer.set_as_default()
@@ -73,13 +76,33 @@ class gradientHacker:
     return (loss,dist_grad)
 
   # Train the model.
-  def train(self,dataset):
-    for step, (batch, labels) in enumerate(dataset.repeat(self.epochs).batch(self.batch_size)):
-      loss, dist_grad = self.training_step(batch,labels)
-      # Log in Tensorboard
-      tf.summary.scalar('Loss', data=loss, step=step)
-      tf.summary.scalar('Distance of Controlled Grad to 0', data=dist_grad, step=step)
-      # Save model if dist is < 1e-5
-      # if not saved and dist_grad < 1e-5:
-      #   model.save(path_models + "/modelStep" + str(step))
-      #   saved = True
+  def train(self,datasets):
+    for dataset in datasets:
+      for step, (batch, labels) in enumerate(dataset.repeat(self.epochs).batch(self.batch_size)):
+        loss, dist_grad = self.training_step(batch,labels)
+        # Log in Tensorboard
+        tf.summary.scalar('Loss', data=loss, step=step)
+        tf.summary.scalar('Distance of Controlled Grad to 0', data=dist_grad, step=step)
+        # Save model if dist is < 1e-5
+        # if not saved and dist_grad < 1e-5:
+        #   model.save(path_models + "/modelStep" + str(step))
+        #   saved = True
+      self.reset_model()
+
+
+  def reset_model(self):
+    hidden_layers = \
+      [keras.layers.Dense(self.nb_hidden_per_layer,activation=self.activation_fn)] \
+      * self.nb_hidden_layers
+    self.model = keras.Sequential([keras.Input(shape=(3,))] \
+                                  + hidden_layers \
+                                  + [keras.layers.Dense(3,activation=self.activation_fn)])
+
+    # Create the right Tensorboard variables
+    run_name = "Regularization" + str(self.regularization_factor) \
+               + "Neuron" + str(self.target_neuron[0]) + ',' + str(self.target_neuron[1]) \
+               + "Target" + str(self.target_error) + '-'
+    logdir = "logs/scalars/" + run_name + datetime.now().strftime("%Y%m%d-%H%M%S")
+    file_writer = tf.summary.create_file_writer(logdir + "/metrics")
+    file_writer.set_as_default()
+
