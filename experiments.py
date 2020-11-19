@@ -22,10 +22,10 @@ nb_datasets = 10
 training_examples = np.array([[[0,1,0]],[[0,1,0]],[[1,1,0]],[[1,1,0]],[[0,0,0]],[[0,0,0]],[[1,1,1]],[[1,1,1]]])
 # training_labels = np.random.rand(nb_datasets,1,output_size)
 training_labels = np.array([[[1,1,1]],[[1,1,0]],[[1,0,1]],[[1,1,0]],[[0,1,1]],[[1,0,1]],[[0,0,0]],[[0,1,0]]])
-datasets = map(lambda x : tf.data.Dataset \
+datasets = list(map(lambda x : tf.data.Dataset \
                                  .from_tensor_slices((tf.constant(x[0]), \
                                                      tf.constant(x[1]))), \
-               zip(training_examples,training_labels))
+               zip(training_examples,training_labels)))
 
 # Define parameters for the gradient hacker
 nb_hidden_layers = 1
@@ -51,4 +51,4 @@ gradientHacks = list(map(lambda x : gradientHacker(nb_hidden_layers, \
                                                    target_error), \
                          regularization_factors))
 
-experiments = list(map(lambda x : x.train(datasets), gradientHacks))
+list(map(lambda x : x.train(datasets), gradientHacks))
