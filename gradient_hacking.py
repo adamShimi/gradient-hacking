@@ -38,8 +38,8 @@ class gradientHacker:
 
     # Create the right Tensorboard variables
     run_name = "Regularization" + str(self.regularization_factor) \
-               + "Neuron" + str(self.target_neuron[0]) + str(self.target_neuron[1]) \
-               + "Target" + str(target_error)
+               + "Neuron" + str(self.target_neuron[0]) + ',' + str(self.target_neuron[1]) \
+               + "Target" + str(target_error) + '-'
     logdir = "logs/scalars/" + run_name + datetime.now().strftime("%Y%m%d-%H%M%S")
     file_writer = tf.summary.create_file_writer(logdir + "/metrics")
     file_writer.set_as_default()
