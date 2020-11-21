@@ -115,7 +115,6 @@ class gradientHacker:
           tf.summary.scalar('Distance of Controlled Grad to 0', data=dist_grad, step=step)
         if self.regularize and dist_grad < self.threshold:
           self.regularize = False
-          print("Back to normal gradient descent!")
         # Save model if dist is < 1e-5
         # if not saved and dist_grad < 1e-5:
         #   model.save(path_models + "/modelStep" + str(step))
