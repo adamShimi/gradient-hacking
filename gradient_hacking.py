@@ -77,7 +77,12 @@ class gradientHacker:
 
   # Train the model.
   def train(self,datasets):
+    first = True
     for dataset in datasets:
+      # Reset the model for the new dataset. Here so that reset only happens if there is
+      # another dataset.
+      if not first:
+        self.reset_model()
       for step, (batch, labels) in enumerate(dataset.repeat(self.epochs).batch(self.batch_size)):
         loss, dist_grad = self.training_step(batch,labels)
         # Log in Tensorboard
@@ -87,7 +92,6 @@ class gradientHacker:
         # if not saved and dist_grad < 1e-5:
         #   model.save(path_models + "/modelStep" + str(step))
         #   saved = True
-      self.reset_model()
 
 
   def reset_model(self):
