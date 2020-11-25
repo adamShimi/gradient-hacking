@@ -21,6 +21,7 @@ class gradientHacker:
 
 
   def __init__(self, \
+               name, \
                nb_hidden_layers, \
                nb_hidden_per_layer, \
                activation_fn, \
@@ -33,6 +34,7 @@ class gradientHacker:
                threshold, \
                random_seed):
 
+    self.name = name
     self.nb_hidden_layers = nb_hidden_layers
     self.nb_hidden_per_layer = nb_hidden_per_layer
     self.activation_fn = activation_fn
@@ -62,7 +64,7 @@ class gradientHacker:
     run_name = "Regularization" + str(self.regularization_factor) \
                + "Neuron" + str(self.target_neuron[0]) + ',' + str(self.target_neuron[1]) \
                + "Target" + str(self.target_error) + '-'
-    logdir = "logs/scalars/" + run_name + datetime.now().strftime("%Y%m%d-%H%M%S")
+    logdir = "logs/scalars/" + self.name + '/' + datetime.now().strftime("%Y%m%d-%H%M%S") + run_name
     self.file_writer = tf.summary.create_file_writer(logdir + "/metrics")
 
     # Create the model folder
@@ -128,6 +130,7 @@ class gradientHacker:
     run_name = "Regularization" + str(self.regularization_factor) \
                + "Neuron" + str(self.target_neuron[0]) + ',' + str(self.target_neuron[1]) \
                + "Target" + str(self.target_error) + '-'
-    logdir = "logs/scalars/" + run_name + datetime.now().strftime("%Y%m%d-%H%M%S")
+
+    logdir = "logs/scalars/" + self.name + '/' + datetime.now().strftime("%Y%m%d-%H%M%S") + run_name
     self.file_writer = tf.summary.create_file_writer(logdir + "/metrics")
 
