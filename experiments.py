@@ -28,14 +28,18 @@ output_size = 3
 nb_datasets = 10
 
 # Only one training example
-training_examples = np.array([[[0,1,0]]])
-training_labels = np.array([[[1,1,0]]])
+examples = [[0,1,0],[0,0,0],[1,1,0],[0,0,1]]
+labels = [[1,1,0],[1,0,1], [0,1,0],[1,1,1]]
+index_training = 0
+training_examples = np.array([[examples[index_training]]])
+training_labels = np.array([[labels[index_training]]])
 datasets = list(map(lambda x : tf.data.Dataset \
                                  .from_tensor_slices((tf.constant(x[0]), \
                                                      tf.constant(x[1]))), \
                zip(training_examples,training_labels)))
 
 # Define parameters for the gradient hacker
+name = "1_Example_Training_Set_0_Seed_0"
 nb_hidden_layers = 1
 nb_hidden_per_layer = 10
 activation_fn = 'sigmoid'
@@ -49,7 +53,8 @@ threshold = 1e-3
 regularization_factors = [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, \
                           6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0]
 
-gradientHacks = list(map(lambda x : gradientHacker(nb_hidden_layers, \
+gradientHacks = list(map(lambda x : gradientHacker(name, \
+                                                   nb_hidden_layers, \
                                                    nb_hidden_per_layer, \
                                                    activation_fn, \
                                                    learning_rate, \
