@@ -38,6 +38,11 @@ class gradientHacker:
     self.nb_hidden_layers = nb_hidden_layers
     self.nb_hidden_per_layer = nb_hidden_per_layer
     self.activation_fn = activation_fn
+
+    np.random.seed(random_seed)
+    python_random.seed(random_seed)
+    tf.random.set_seed(random_seed)
+
     hidden_layers = \
       [keras.layers.Dense(nb_hidden_per_layer,activation=activation_fn)] * nb_hidden_layers
     self.model = keras.Sequential([keras.Input(shape=(3,))] \
