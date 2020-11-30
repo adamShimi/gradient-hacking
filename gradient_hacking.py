@@ -12,13 +12,18 @@ import os
 class gradientHacker:
 
   init_model = None
+  init_nb_layers = None
+  init_nb_hidden_neurons = None
 
   def get_model(self):
-    if self.init_model == None:
-      self.init_model = self.model.get_weights()
-    else:
+    if self.init_model != None \
+       and self.init_nb_layers == self.nb_hidden_layers \
+       and self.init_nb_hidden_neurons == self.nb_hidden_per_layer:
       self.model.set_weights(self.init_model)
-
+    else:
+      self.init_model = self.model.get_weights()
+      self.init_nb_layers = self.nb_hidden_layers
+      self.init_nb_hidden_neurons = self.nb_hidden_per_layer
 
   def __init__(self, \
                name, \
