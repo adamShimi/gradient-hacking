@@ -20,8 +20,19 @@ output_size = 3
 nb_datasets = 10
 
 # Only one training example
-training_examples = np.array([[[0,1,0]],[[0,0,0]],[[1,1,0]],[[0,0,1]]])
-training_labels = np.array([[[1,1,0]],[[1,0,1]],[[0,1,0]],[[1,1,1]]])
+# training_examples = np.array([[[0,1,0]],[[0,0,0]],[[1,1,0]],[[0,0,1]]])
+# training_labels = np.array([[[1,1,0]],[[1,0,1]],[[0,1,0]],[[1,1,1]]])
+
+# Two training examples
+training_examples = np.array([[[0,1,0],[0,0,0]], \
+                              [[0,0,0],[1,1,0]], \
+                              [[1,1,0],[0,0,1]], \
+                              [[0,0,1],[0,1,0]]])
+training_labels = np.array([[[1,1,0],[1,0,1]], \
+                            [[1,0,1],[0,1,0]], \
+                            [[0,1,0],[1,1,1]], \
+                            [[1,1,1],[1,1,0]]])
+
 datasets = list(map(lambda x : tf.data.Dataset \
                                  .from_tensor_slices((tf.constant(x[0]), \
                                                      tf.constant(x[1]))), \
@@ -33,7 +44,7 @@ nb_hidden_per_layer = 10
 activation_fn = 'sigmoid'
 learning_rate = 1e-3
 epochs = 1000
-batch_size = 1
+batch_size = 2
 target_neuron = (1,0)
 target_error = 0
 threshold = 1e-3
@@ -51,7 +62,7 @@ for dataset_index in range(len(datasets)):
       python_random.seed(random_seed)
       tf.random.set_seed(random_seed)
 
-      name = '1_Example_Training_Set_' + str(dataset_index) + '_Seed_' + str(seed_index)
+      name = '2_Examples_Batch_' + str(batch_size) + 'Training_Set_' + str(dataset_index) + '_Seed_' + str(seed_index)
       gradientHack = gradientHacker(name, \
                                     nb_hidden_layers, \
                                     nb_hidden_per_layer, \
