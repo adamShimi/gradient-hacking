@@ -11,20 +11,6 @@ import os
 
 class gradientHacker:
 
-  init_model = None
-  init_nb_layers = None
-  init_nb_hidden_neurons = None
-
-  def get_model(self):
-    if self.init_model != None \
-       and self.init_nb_layers == self.nb_hidden_layers \
-       and self.init_nb_hidden_neurons == self.nb_hidden_per_layer:
-      self.model.set_weights(self.init_model)
-    else:
-      self.init_model = self.model.get_weights()
-      self.init_nb_layers = self.nb_hidden_layers
-      self.init_nb_hidden_neurons = self.nb_hidden_per_layer
-
   def __init__(self, \
                name, \
                nb_hidden_layers, \
@@ -53,7 +39,6 @@ class gradientHacker:
     self.model = keras.Sequential([keras.Input(shape=(3,))] \
                                   + hidden_layers \
                                   + [keras.layers.Dense(3,activation=activation_fn)])
-    self.get_model()
 
     self.optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     self.loss_fn = tf.keras.losses.KLDivergence()
