@@ -72,11 +72,6 @@ class gradientHacker:
     logdir = "logs/" + self.name
     self.file_writer = tf.summary.create_file_writer(logdir + "/metrics")
 
-    # Create the model folder
-    # path_models = os.getcwd() + '/models/' + run_name
-    # os.mkdir(path_models)
-    # saved = False
-
 
   # Train for one step on the loss function
   @tf.function
@@ -92,14 +87,13 @@ class gradientHacker:
       # Compute the distance of error of neuron (the gradient of the bias)
       # with targeted value.
       dist_grad = abs(grads[self.target_neuron[0]][self.target_neuron[1]]-self.target_error)
+    # Compute the gradient of the distance between target_grad and the gradient
+    # of target_weight.
+    grads2 = tape2.gradient(dist_grad, self.model.trainable_weights)
+    grads2 = list(map(lambda x : tf.math.scalar_mul(self.regularization_factor[0], x),grads2))
     # Update the weights.
     self.optimizer.apply_gradients(zip(grads, self.model.trainable_weights))
-    if self.regularize:
-      # Compute the gradient of the distance between target_grad and the gradient
-      # of target_weight.
-      grads2 = tape2.gradient(dist_grad, self.model.trainable_weights)
-      grads2 = list(map(lambda x : tf.math.scalar_mul(self.regularization_factor[0], x),grads2))
-      self.optimizer.apply_gradients(zip(grads2, self.model.trainable_weights))
+    self.optimizer.apply_gradients(zip(grads2, self.model.trainable_weights))
     return (loss,dist_grad)
 
   # Train the model.
@@ -118,10 +112,20 @@ class gradientHacker:
         tf.summary.scalar('Distance of Controlled Grad to 0', data=dist_grad, step=step)
       if self.regularize and dist_grad < self.threshold:
         self.regularize = False
-      # Save model if dist is < 1e-5
-      # if not saved and dist_grad < 1e-5:
-      #   model.save(path_models + "/modelStep" + str(step))
-      #   saved = True
+      # Update regularization
+      if step <= self.annealing[1]:
+        self.regularization_factor = self.annealing[0]
+      if step > self.annealing[1] and self < self.annealing[3]:
+        self.regularization_factor = \
+          (self.regularization_factor[0] \
+           + (self.annealing[2][0] - self.annealing[0][0])/(self.annealing[3] - self.annealing[1]),\
+           self.regularization_factor[1] \
+           + (self.annealing[2][1] - self.annealing[0][1])/(self.annealing[3] - self.annealing[1]))
+      else:
+        self.regularization_factor = self.annealing[2]
+      # Remove regularization when threshold reached
+      if not self.regularize:
+        self.regularization_factor = (0,1)
 
   def reset_model(self):
     self.get_model()

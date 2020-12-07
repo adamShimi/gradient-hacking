@@ -33,7 +33,6 @@ random_seeds = [42,349245,2,404523,99850,30452111,646,12]
 # Define parameters for the gradient hacker
 nb_hidden_layers = 1
 nb_hidden_per_layer = 15
-nb_hidden_per_layer_list = [15,20,25,30,35,40,45,50,55,60]
 activation_fn = 'sigmoid'
 learning_rate = 1e-3
 epochs = 1000
@@ -41,14 +40,14 @@ batch_size = 1
 # Each pair is (coeff regularization, coeff loss),
 # and the elements are [initial coeffs, epoch starting annealing,
 #                       final coeffs, epoch ending annealing]
-annealings = [[(x,1.0),-1,(0.0,0.0),-1] for x in np.arange(0.0,6.0,.5)]
+annealings = [[(x,1.0),1000,(0.0,0.0),-1] for x in np.arange(0.0,6.0,.5)]
 target_neuron = (1,0)
 target_error = 0
 threshold = 1e-4
 
 
 for dataset_index in range(len(datasets)):
-  for seed_index in [0]:#range(len(random_seeds)):
+  for seed_index in range(len(random_seeds)):
     for annealing in annealings:
 
       random_seed = random_seeds[seed_index]
@@ -57,7 +56,7 @@ for dataset_index in range(len(datasets)):
       python_random.seed(random_seed)
       tf.random.set_seed(random_seed)
 
-      folder = 'Bitflip_Size_' + str(data_size) \
+      folder = 'Bitflip_Test_Size_' + str(data_size) \
                + '_Hidden_' + str(nb_hidden_per_layer) \
                + '_Neuron_' + str(target_neuron[0]) + ',' + str(target_neuron[1]) \
                + '_Target_' + str(target_error) \
@@ -66,7 +65,7 @@ for dataset_index in range(len(datasets)):
       # Just for current experiment
       name = 'Training_' + str(dataset_index) \
              + '_Seed_' + str(seed_index) \
-             + '_Annealing_' + str(annealing[0][0]) \
+             + '_Annealing_' + str(annealing) \
 
       gradientHack = gradientHacker(folder + name, \
                                     data_size, \
