@@ -16,16 +16,9 @@ import random as python_random
 # Create training example (bitflip)
 
 data_size = 3
-training_set_size = 1
+training_set_size = 2
 
 training_examples,training_labels = bitflip(data_size,training_set_size)
-training_examples = np.array(training_examples)
-training_labels = np.array(training_labels)
-
-datasets = list(map(lambda x : tf.data.Dataset \
-                                 .from_tensor_slices((tf.constant(x[0]), \
-                                                     tf.constant(x[1]))), \
-               zip(training_examples,training_labels)))
 
 # Set up random seed
 random_seeds = [42,349245,2,404523,99850,30452111,646,12]
@@ -36,7 +29,7 @@ nb_hidden_per_layer = 15
 activation_fn = 'sigmoid'
 learning_rate = 1e-3
 epochs = 1000
-batch_size = 1
+batch_size = training_set_size
 # Each pair is (coeff regularization, coeff loss),
 # and the elements are [initial coeffs, epoch starting annealing,
 #                       final coeffs, epoch ending annealing]
@@ -45,9 +38,14 @@ target_neuron = (1,0)
 target_error = 0
 threshold = 1e-4
 
-
-for dataset_index in range(len(datasets)):
-  for seed_index in range(len(random_seeds)):
+# Correct that for bigger dataset.
+for dataset_index in [0]:#range(len(datasets)):
+  training_example = np.array(list(next(training_examples)))
+  training_label = np.array(list(next(training_labels)))
+  dataset = tf.data.Dataset \
+                   .from_tensor_slices((tf.constant(training_example), \
+                                        tf.constant(training_label)))
+  for seed_index in [0]:# range(len(random_seeds)):
     for annealing in annealings:
 
       random_seed = random_seeds[seed_index]
@@ -56,7 +54,10 @@ for dataset_index in range(len(datasets)):
       python_random.seed(random_seed)
       tf.random.set_seed(random_seed)
 
-      folder = 'Bitflip_Test_Size_' + str(data_size) \
+      folder = 'Bitflip' \
+               + '_Size_' + str(data_size) \
+               + '_Nb_Examples_' + str(training_set_size) \
+               + '_Batch_Size_' + str(batch_size) \
                + '_Hidden_' + str(nb_hidden_per_layer) \
                + '_Neuron_' + str(target_neuron[0]) + ',' + str(target_neuron[1]) \
                + '_Target_' + str(target_error) \
@@ -80,5 +81,6 @@ for dataset_index in range(len(datasets)):
                                     target_error, \
                                     threshold,
                                     random_seed)
-      gradientHack.train(datasets[dataset_index])
+
+      gradientHack.train(dataset)
       print("Training ", name, " Finished")
