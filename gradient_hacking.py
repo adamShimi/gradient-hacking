@@ -115,7 +115,7 @@ class gradientHacker:
       # Update regularization
       if step <= self.annealing[1]:
         self.regularization_factor = self.annealing[0]
-      if step > self.annealing[1] and self < self.annealing[3]:
+      elif step > self.annealing[1] and step < self.annealing[3]:
         self.regularization_factor = \
           (self.regularization_factor[0] \
            + (self.annealing[2][0] - self.annealing[0][0])/(self.annealing[3] - self.annealing[1]),\
