@@ -1,7 +1,5 @@
-import itertools
-
 # Returns iterators on the list of combinations tuples
-def bitflip(nb_dim, size_dataset):
+def bitflip(nb_dim, patterns):
   def rec_bitflip(nb_dim):
     if nb_dim == 0:
       return []
@@ -13,7 +11,6 @@ def bitflip(nb_dim, size_dataset):
              + [[1] + x for x in next_bitflip]
 
   training = rec_bitflip(nb_dim)
-  labels = training[::-1]
-  training = itertools.combinations(training,size_dataset)
-  labels = itertools.combinations(labels,size_dataset)
+  training = [[training[i] for i in pattern] for pattern in patterns]
+  labels = list(map(lambda x: x[::-1],training))
   return (training,labels)
