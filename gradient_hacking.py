@@ -8,6 +8,7 @@ from numpy import random
 import random as python_random
 from datetime import datetime
 import os
+import shutil
 
 class gradientHacker:
 
@@ -70,6 +71,8 @@ class gradientHacker:
 
     # Create the right Tensorboard variables
     logdir = "logs/" + self.name
+    if os.path.isdir(logdir):
+      shutil.rmtree(logdir)
     self.file_writer = tf.summary.create_file_writer(logdir + "/metrics")
 
 
