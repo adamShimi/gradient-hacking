@@ -10,7 +10,14 @@ def bitflip(nb_dim, patterns):
       return [[0] + x for x in next_bitflip] \
              + [[1] + x for x in next_bitflip]
 
+  def inverse(bit):
+    if bit == 0:
+      return 1
+    else:
+      return 0
+
+
   training = rec_bitflip(nb_dim)
   training = [[training[i] for i in pattern] for pattern in patterns]
-  labels = list(map(lambda x: x[::-1],training))
+  labels = list(map(lambda x: [inverse(y) for y in x],training))
   return (training,labels)
