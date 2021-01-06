@@ -54,7 +54,7 @@ class gradientHacker:
 
     # Define parameters for the optimization process
     self.optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-    self.loss_fn = tf.keras.losses.KLDivergence()
+    self.loss_fn = tf.keras.losses.MeanSquaredError(reduction="auto", name="mean_squared_error")
     self.epochs = epochs
     self.batch_size = batch_size
 
